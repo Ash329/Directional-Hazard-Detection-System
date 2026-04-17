@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f8f4eb">
+    <title>{% block title %}Directional Hazard Detection{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sand: "#f8f4eb",
+                        shell: "#fffaf3",
+                        ink: "#102830",
+                        mist: "#33484f",
+                        tide: "#1d8f87",
+                        tideDeep: "#126c66",
+                        coral: "#ed8b63",
+                    },
+                    fontFamily: {
+                        sans: ["Manrope", "sans-serif"],
+                        serif: ["Newsreader", "serif"],
+                    },
+                    boxShadow: {
+                        panel: "0 24px 60px rgba(22, 51, 59, 0.12)",
+                    },
+                },
+            },
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="min-h-screen bg-sand font-sans text-ink antialiased">
+    <div class="background-glow background-glow-left"></div>
+    <div class="background-glow background-glow-right"></div>
+    <div class="site-shell site-shell-mobile relative">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>

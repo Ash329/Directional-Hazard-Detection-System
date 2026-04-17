@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Directional Hazard Detection{% endblock %}
+
+{% block content %}
+<main class="mobile-shell">
+    <section class="intro-card">
+        <p class="intro-description">
+            This website helps visually impaired individuals detect and respond to potential hazards in their
+            surroundings by analyzing visual input, identifying dangerous objects such as vehicles, bicycles,
+            and obstacles, determining their position relative to the user, and providing real-time directional
+            audio alerts such as left, center, and right.
+        </p>
+    </section>
+
+    <section class="camera-stage" data-camera-stage>
+        <video class="camera-feed" autoplay muted playsinline data-camera-view></video>
+        <canvas class="overlay-canvas" data-overlay-canvas></canvas>
+        <canvas hidden data-capture-canvas></canvas>
+        <div class="camera-placeholder" data-camera-placeholder aria-hidden="true">
+            <div class="camera-placeholder-orb"></div>
+        </div>
+    </section>
+
+    <div class="control-dock" role="group" aria-label="Live hazard detection controls">
+        <button class="control-button" type="button" data-camera-toggle aria-label="Start or stop the live camera">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h7A2.5 2.5 0 0 1 16 7.5V8l3.2-2.1A1.2 1.2 0 0 1 21 6.9v10.2a1.2 1.2 0 0 1-1.8 1L16 16v.5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 4 16.5z"/>
+            </svg>
+            <span class="sr-only">Toggle live camera</span>
+        </button>
+
+        <button class="control-button" type="button" data-camera-flip aria-label="Switch between front and rear cameras">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3h2.5A2.5 2.5 0 0 1 21 5.5V8"/>
+                <path d="M8 21H5.5A2.5 2.5 0 0 1 3 18.5V16"/>
+                <path d="M21 8l-3-3-3 3"/>
+                <path d="M3 16l3 3 3-3"/>
+                <path d="M8 7.5C9.2 6.5 10.5 6 12 6c2.5 0 4.7 1.3 6 3.4"/>
+                <path d="M16 16.5c-1.2 1-2.5 1.5-4 1.5-2.5 0-4.7-1.3-6-3.4"/>
+            </svg>
+            <span class="sr-only">Switch cameras</span>
+        </button>
+
+        <button class="control-button is-active" type="button" data-audio-toggle aria-label="Mute or unmute audio alerts">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 10v4h4l5 4V6l-5 4z"/>
+                <path d="M17 9a4 4 0 0 1 0 6"/>
+                <path d="M19.8 6.2a8 8 0 0 1 0 11.6"/>
+            </svg>
+            <span class="sr-only">Toggle audio alerts</span>
+        </button>
+    </div>
+
+    <div class="sr-only" aria-live="polite" data-live-region></div>
+</main>
+{% endblock %}

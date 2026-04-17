@@ -1,0 +1,13 @@
+Flask>=3.0
+numpy>=1.24
+opencv-python>=4.8
+torch>=2.2
+torchvision>=0.17
+pandas>=2.0
+Pillow>=10.0
+PyYAML>=6.0
+requests>=2.31
+scipy>=1.11
+tqdm>=4.66
+matplotlib>=3.8
+seaborn>=0.13
