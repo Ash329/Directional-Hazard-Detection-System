@@ -3,3 +3,4 @@ __pycache__/
 runtime/uploads/
 runtime/processed/
 .DS_Store
+data/*.mp4
