@@ -1,0 +1,39 @@
+{
+    "name": "Directional Hazard Detection",
+    "short_name": "Hazard Detect",
+    "description": "Real-time directional hazard detection with spoken alerts for visually impaired users.",
+    "start_url": "/?source=pwa",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#f8f4eb",
+    "theme_color": "#102830",
+    "lang": "en",
+    "categories": ["accessibility", "health", "utilities"],
+    "icons": [
+        {
+            "src": "/static/icons/icon-192.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "any"
+        },
+        {
+            "src": "/static/icons/icon-512.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "any"
+        },
+        {
+            "src": "/static/icons/icon-192-maskable.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/static/icons/icon-512-maskable.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "maskable"
+        }
+    ]
+}

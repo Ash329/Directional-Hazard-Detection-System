@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 import base64
+import logging
 from dataclasses import asdict, dataclass
-from importlib import util
 from pathlib import Path
 import threading
 
 import cv2
 import numpy as np
 
+logger = logging.getLogger(__name__)
+
 BASE_DIR = Path(__file__).resolve().parent
-DETECTOR_CANDIDATES = ("detectory.py", "detector.py")
+DEFAULT_MODEL_PATH = str(BASE_DIR / "yolov8n.pt")
 LEFT_BOUNDARY = 1 / 3
 RIGHT_BOUNDARY = 2 / 3
 HAZARD_PRIORITY = {
@@ -34,8 +36,7 @@ HAZARD_PRIORITY = {
 
 _detector_lock = threading.Lock()
 _detector_instance = None
-_detector_source = "Pretrained YOLOv5"
-_detector_error = ""
+_detector_source = "Pretrained YOLOv8 (detectors/object_detector.py)"
 _detector_attempted = False
 
 
@@ -119,13 +120,14 @@ def _run_detector(frame: np.ndarray) -> list[dict]:
     try:
         detections, _ = detector.detect(frame)
     except Exception:
+        logger.exception("YOLO detect() failed on frame")
         return []
 
     return detections
 
 
 def _get_or_load_detector():
-    global _detector_attempted, _detector_error, _detector_instance, _detector_source
+    global _detector_attempted, _detector_instance
 
     if _detector_attempted:
         return _detector_instance
@@ -136,40 +138,16 @@ def _get_or_load_detector():
 
         _detector_attempted = True
 
-        for candidate_name in DETECTOR_CANDIDATES:
-            candidate_path = BASE_DIR / candidate_name
-            if not candidate_path.exists():
-                continue
+        try:
+            from detectors.object_detector import ObjectDetector
 
-            try:
-                module = _load_module(candidate_path)
-            except Exception as exc:
-                _detector_error = f"{candidate_name}: {exc.__class__.__name__}"
-                continue
-
-            detector_class = getattr(module, "ObjectDetector", None)
-            if detector_class is None:
-                continue
-
-            try:
-                _detector_instance = detector_class(model_name="yolov5s", conf_threshold=0.35)
-                _detector_source = f"Pretrained YOLOv5 ({candidate_name})"
-                return _detector_instance
-            except Exception as exc:
-                _detector_error = f"{candidate_name}: {exc.__class__.__name__}"
-                _detector_instance = None
+            _detector_instance = ObjectDetector(model_path=DEFAULT_MODEL_PATH, conf_threshold=0.35)
+            logger.info("Loaded detector: %s (model=%s)", _detector_source, DEFAULT_MODEL_PATH)
+        except Exception:
+            logger.exception("Failed to load ObjectDetector — detection will return no hazards")
+            _detector_instance = None
 
     return _detector_instance
-
-
-def _load_module(module_path: Path):
-    spec = util.spec_from_file_location(f"live_detector_{module_path.stem}", module_path)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Unable to load module from {module_path.name}")
-
-    module = util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 def _normalize_detections(raw_detections: list[dict], width: int, height: int) -> list[LiveDetection]:

@@ -3,8 +3,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#f8f4eb">
+    <meta name="theme-color" content="#102830">
+    <meta name="description" content="Real-time directional hazard detection with spoken alerts for visually impaired users.">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Hazard Detect">
     <title>{% block title %}Directional Hazard Detection{% endblock %}</title>
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="{{ url_for('static', filename='icons/favicon-32.png') }}" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/apple-touch-icon.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -43,5 +51,14 @@
     </div>
 
     <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker
+                    .register("/service-worker.js", { scope: "/" })
+                    .catch((error) => console.error("Service worker registration failed.", error));
+            });
+        }
+    </script>
 </body>
 </html>

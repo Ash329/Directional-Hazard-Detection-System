@@ -206,10 +206,12 @@ function initLiveDetection() {
             drawOverlay(payload.detections || [], payload.primary_direction || null);
 
             if (liveRegion) {
-                liveRegion.textContent = payload.summary_text || "";
+                liveRegion.textContent = payload.has_hazard ? (payload.summary_text || "") : "";
             }
 
-            speakSummary(payload.summary_text || "");
+            if (payload.has_hazard) {
+                speakSummary(payload.summary_text || "");
+            }
         } catch (error) {
             console.error("Live detection failed.", error);
             clearOverlay();
