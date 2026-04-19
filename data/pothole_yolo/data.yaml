@@ -1,0 +1,6 @@
+path: /home/arshia/Desktop/Projects/Directional-Hazard-Detection-System/data/pothole_yolo
+train: images/train
+val: images/val
+
+names:
+  0: pothole
