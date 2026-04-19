@@ -1,5 +1,7 @@
 The website is available at: https://mohabs3-directional-hazard-detection.hf.space
 
+Does not work on Safari on iOS.
+
 # Directional Hazard Detection System
 
 An accessibility-focused computer-vision web app that helps visually impaired users detect hazards in real time. The user opens the site on a phone, grants camera access, and the app speaks directional alerts — *"Car ahead"*, *"Person on the left"* — as objects appear in the camera feed.
