@@ -10,56 +10,53 @@ from hazard_logic import HazardAnalyzer
 INPUT_VIDEO = "data/test.mp4"
 OUTPUT_VIDEO = "data/output_hazard_10s.mp4"
 
-# Toggle detectors
 USE_OBJECT_DETECTOR = True
 USE_OPEN_VOCAB = True
-GROUND_DETECTION = Falses
-
 
 OBJECT_CLASSES = ["person", "car", "bicycle"]
-
 OPEN_VOCAB_PROMPTS = ["cone", "barrier", "trash bag", "branch"]
 
 
-### Random 10 seconds 
 def get_random_clip(video_path, seconds=10):
     cap = cv2.VideoCapture(video_path)
 
     if not cap.isOpened():
-        raise RuntimeError("Could not open video")
+        raise RuntimeError(f"Could not open video: {video_path}")
 
     fps = cap.get(cv2.CAP_PROP_FPS)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-
     cap.release()
+
+    if fps <= 0:
+        raise RuntimeError("Invalid FPS from video")
 
     clip_frames = int(fps * seconds)
     max_start = max(0, total_frames - clip_frames)
 
     start = random.randint(0, max_start) if max_start > 0 else 0
-    end = start + clip_frames
+    end = min(start + clip_frames, total_frames)
 
     return fps, start, end
 
 
-### Draw box function 
 def draw_hazards(frame, detections):
     for det in detections:
         x1, y1, x2, y2 = det["box"]
 
-        label = det["label"]
-        severity = det["severity"]
-        motion = det["motion"]
-        position = det["position"]
+        label = det.get("label", "unknown")
+        severity = det.get("severity", "ignore")
+        motion = det.get("motion", "unknown")
+        position = det.get("position", "unknown")
+        proximity = det.get("proximity", "unknown")
 
         if severity == "hazard":
-            color = (0, 0, 255)    
+            color = (0, 0, 255)
         elif severity == "caution":
-            color = (0, 255, 255)  
+            color = (0, 255, 255)
         else:
-            color = (0, 255, 0)      
+            color = (0, 255, 0)
 
-        text = f"{label} | {severity} | {position} | {motion}"
+        text = f"{label} | {severity} | {position} | {proximity} | {motion}"
 
         cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
         cv2.putText(
@@ -73,7 +70,6 @@ def draw_hazards(frame, detections):
         )
 
     return frame
-
 
 
 def main():
@@ -93,13 +89,16 @@ def main():
     height = 480
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    writer = cv2.VideoWriter(OUTPUT_VIDEO, fourcc, fps / 2, (width, height))  
+    writer = cv2.VideoWriter(OUTPUT_VIDEO, fourcc, fps / 2, (width, height))
 
-    # Load detectors
     object_detector = ObjectDetector("yolov8n.pt", 0.25) if USE_OBJECT_DETECTOR else None
     open_vocab_detector = OpenVocabDetector("yolov8s-world.pt", 0.2) if USE_OPEN_VOCAB else None
-
     hazard_analyzer = HazardAnalyzer()
+
+    if object_detector:
+        print(f"Object detector device: {object_detector.device}")
+    if open_vocab_detector:
+        print("Open vocab device: cpu")
 
     frame_idx = start_frame
     processed = 0
@@ -109,39 +108,33 @@ def main():
         if not ret:
             break
 
-        # Resize
         frame = cv2.resize(frame, (width, height))
 
-       
-        if frame_idx % 2 != 0:
-            frame_idx += 1
-            continue
+        if frame_idx % 2 == 0:
+            all_detections = []
 
-        all_detections = []
+            if object_detector:
+                detections, _ = object_detector.detect(frame, classes=OBJECT_CLASSES)
+                all_detections.extend(detections)
 
-        # --- Object Detector ---
-        if object_detector:
-            detections, _ = object_detector.detect(frame, classes=OBJECT_CLASSES)
-            all_detections.extend(detections)
+            if open_vocab_detector:
+                detections, _ = open_vocab_detector.detect(frame, prompts=OPEN_VOCAB_PROMPTS)
+                all_detections.extend(detections)
 
-        # Open Vocab Detector 
-        if open_vocab_detector:
-            detections, _ = open_vocab_detector.detect(frame, prompts=OPEN_VOCAB_PROMPTS)
-            all_detections.extend(detections)
+            analyzed = hazard_analyzer.analyze(all_detections, width, height)
 
-        # Hazard Analysis 
-        analyzed = hazard_analyzer.analyze(all_detections, width, height)
+            # only keep caution or hazard
+            analyzed = [det for det in analyzed if det.get("is_hazard", False)]
 
-        #Draw
-        annotated = draw_hazards(frame.copy(), analyzed)
+            annotated = draw_hazards(frame.copy(), analyzed)
+            writer.write(annotated)
 
-        writer.write(annotated)
+            processed += 1
 
-        processed += 1
+            if processed % 30 == 0:
+                print(f"Processed {processed} frames...")
+
         frame_idx += 1
-
-        if processed % 30 == 0:
-            print(f"Processed {processed} frames...")
 
     cap.release()
     writer.release()

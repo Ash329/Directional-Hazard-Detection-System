@@ -4,7 +4,7 @@ import torch
 
 def main():
     device = 0 if torch.cuda.is_available() else "cpu"
-
+    print(device) 
     model = YOLO("yolov8n.pt")
 
     model.train(

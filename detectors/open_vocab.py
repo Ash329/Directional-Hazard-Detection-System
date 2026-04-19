@@ -4,25 +4,34 @@ import torch
 
 class OpenVocabDetector:
     def __init__(self, model_path="yolov8s-world.pt", conf_threshold=0.2):
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-
+        # Force CPU for YOLO-World because set_classes() can crash with CPU/CUDA mismatch
+        self.device = "cpu"
         self.model = YOLOWorld(model_path)
+        self.model.to("cpu")
+
         self.conf_threshold = conf_threshold
+        self.current_prompts = None
 
     def detect(self, frame, prompts):
-        self.model.set_classes(prompts)
+        prompts = list(prompts)
 
-        results = self.model.predict(
-            source=frame,
-            conf=self.conf_threshold,
-            device=self.device,
-            verbose=False
-        )
+        # Only reset classes if prompts changed
+        if self.current_prompts != prompts:
+            self.model.set_classes(prompts)
+            self.current_prompts = prompts.copy()
+
+        with torch.inference_mode():
+            results = self.model.predict(
+                source=frame,
+                conf=self.conf_threshold,
+                device=self.device,
+                verbose=False
+            )
 
         detections = []
         result = results[0]
 
-        if result.boxes is not None:
+        if result.boxes is not None and len(result.boxes) > 0:
             boxes = result.boxes
             names = result.names
 

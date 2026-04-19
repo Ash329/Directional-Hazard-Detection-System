@@ -17,9 +17,7 @@ class HazardAnalyzer:
         self.vehicle_labels = {"car", "truck", "bus", "motorcycle", "bicycle"}
         self.obstacle_labels = {"cone", "barrier", "trash bag", "branch"}
         self.person_labels = {"person"}
-
-
-
+        self.ground_hazard_labels = {"pothole"}
 
     def analyze(self, detections, frame_width, frame_height):
         detections = self._assign_positions(detections, frame_width)
@@ -29,7 +27,6 @@ class HazardAnalyzer:
         detections = self._assign_hazard_level(detections)
         self._update_tracks(detections)
         return detections
-
 
     def _assign_positions(self, detections, frame_width):
         for det in detections:
@@ -44,7 +41,6 @@ class HazardAnalyzer:
                 det["position"] = "right"
 
         return detections
-
 
     def _assign_proximity(self, detections, frame_width, frame_height):
         frame_area = frame_width * frame_height
@@ -69,9 +65,6 @@ class HazardAnalyzer:
                 det["proximity"] = "far"
 
         return detections
-
-
-
 
     def _box_center(self, box):
         x1, y1, x2, y2 = box
@@ -114,9 +107,6 @@ class HazardAnalyzer:
 
         return detections
 
-
-
-
     def _assign_motion_trend(self, detections):
         for det in detections:
             prev_area = det.get("previous_area")
@@ -137,8 +127,6 @@ class HazardAnalyzer:
 
         return detections
 
-
-
     def _assign_hazard_level(self, detections):
         for det in detections:
             label = det["label"].lower()
@@ -151,7 +139,7 @@ class HazardAnalyzer:
             if label in self.vehicle_labels:
                 if proximity == "close" and position == "center" and motion in {"approaching", "stable"}:
                     severity = "hazard"
-                elif proximity in {"medium", "close"}:
+                elif (proximity == "medium" and position == "center") or (proximity == "close" and position in {"left", "right"}):
                     severity = "caution"
 
             elif label in self.obstacle_labels:
@@ -166,12 +154,16 @@ class HazardAnalyzer:
                 elif proximity in {"medium", "close"} and position == "center":
                     severity = "caution"
 
+            elif label in self.ground_hazard_labels:
+                if proximity == "close" and position == "center":
+                    severity = "hazard"
+                elif proximity in {"medium", "close"}:
+                    severity = "caution"
+
             det["severity"] = severity
             det["is_hazard"] = severity in {"hazard", "caution"}
 
         return detections
-
-
 
     def _update_tracks(self, detections):
         new_tracks = []
