@@ -1,6 +1,3 @@
-The website is available at: https://mohabs3-directional-hazard-detection.hf.space
-
-Does not work on Safari on iOS.
 
 # Directional Hazard Detection System
 
