@@ -1,7 +1,12 @@
 venv/
+.venv/
 __pycache__/
+*.pyc
+.DS_Store
+.env
+
 runtime/uploads/
 runtime/processed/
-.DS_Store
+
 data/*.mp4
-data/pothole.zip
+data/*.zip
