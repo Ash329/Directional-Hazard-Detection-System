@@ -1,4 +1,3 @@
-The website is available at: https://mohabs3-directional-hazard-detection.hf.space
 
 # Directional Hazard Detection System
 
@@ -81,6 +80,20 @@ exists, Ultralytics writes to `pothole_detector2/` instead, so copy the new
 | GET    | `/manifest.webmanifest`   | PWA manifest (also served from `/static/`)      |
 | GET    | `/service-worker.js`      | Service worker (scoped to `/`)                  |
 
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="assets/IMG_1655.PNG" width="260" alt="Screenshot 1"></td>
+    <td><img src="assets/IMG_1657.PNG" width="260" alt="Screenshot 2"></td>
+    <td><img src="assets/IMG_1659.PNG" width="260" alt="Screenshot 3"></td>
+  </tr>
+</table>
+
 ## Deployment
 
 The app is deployed as a **Docker Space on Hugging Face Spaces** (CPU Basic tier, free, 16 GB RAM). Everything the Space needs lives in this repo. The link is https://mohabs3-directional-hazard-detection.hf.space. 
+
+## Videos 
+Videos are available on Google Drive: 
+https://drive.google.com/file/d/13oX9Spzf1nRqVPqxjc_fLGuqzCw_PXck/view?usp=sharing 
