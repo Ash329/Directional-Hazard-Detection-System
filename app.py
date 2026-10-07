@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from flask import Flask, jsonify, make_response, render_template, request, send_from_directory
 
-from live_detection import analyze_live_frame_data_url
+from live_detection import analyze_live_frame_data_url, warm_up_detectors
 
 
 def create_app() -> Flask:
@@ -49,6 +49,8 @@ def create_app() -> Flask:
     def health():
         return jsonify({"status": "ok"})
 
+    warm_up_detectors()
+
     return app
 
 
@@ -56,4 +58,5 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # The reloader would import this module in a second process and load the models twice.
+    app.run(debug=True, use_reloader=False)

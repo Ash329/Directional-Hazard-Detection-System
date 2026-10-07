@@ -75,6 +75,14 @@ class LiveDetectionResult:
         return asdict(self)
 
 
+def warm_up_detectors() -> None:
+    """Load every model and run one blank frame so CUDA init and the CLIP prompt
+    encoding happen at startup instead of on the first camera frame."""
+    blank = np.zeros((480, 640, 3), dtype=np.uint8)
+    _run_detector(blank)
+    logger.info("Detectors warmed up")
+
+
 def analyze_live_frame_data_url(data_url: str) -> dict:
     frame = _decode_data_url(data_url)
     return analyze_live_frame(frame).to_payload()
