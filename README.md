@@ -95,7 +95,7 @@ exists, Ultralytics writes to `pothole_detector2/` instead, so copy the new
 
 ## Deployment
 
-The app is deployed as a **Docker Space on Hugging Face Spaces** (CPU Basic tier, free, 16 GB RAM). Everything the Space needs lives in this repo. The link is https://mohabs3-directional-hazard-detection.hf.space. 
+The app is deployed as a **Docker Space on Hugging Face Spaces** (CPU Basic tier, free, 16 GB RAM). Everything the Space needs lives in this repo. The link is https://hazard-detection.arshia.works/
 
 ## Videos 
 Videos are available on Google Drive: 
