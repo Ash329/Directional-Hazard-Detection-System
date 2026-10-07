@@ -1,3 +1,5 @@
+import gc
+
 from ultralytics import YOLOWorld
 import torch
 
@@ -19,6 +21,10 @@ class OpenVocabDetector:
         if self.current_prompts != prompts:
             self.model.set_classes(prompts)
             self.current_prompts = prompts.copy()
+            # The CLIP text encoder (~1.4 GB) is only needed to embed the prompts;
+            # Ultralytics caches it on the model, so drop it once the embeddings exist.
+            self.model.model.clip_model = None
+            gc.collect()
 
         with torch.inference_mode():
             results = self.model.predict(

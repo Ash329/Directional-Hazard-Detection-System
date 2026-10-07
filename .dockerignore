@@ -11,3 +11,9 @@ venv
 .vscode
 runtime
 yolov8s-world.pt
+
+# Training-only assets (not needed to serve the app)
+data
+train_pothole.py
+runs
+!runs/detect/pothole_detector/weights/best.pt

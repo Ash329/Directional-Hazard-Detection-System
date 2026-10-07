@@ -3,54 +3,104 @@
 {% block title %}Directional Hazard Detection{% endblock %}
 
 {% block content %}
-<main class="mobile-shell">
-    <section class="intro-card">
-        <p class="intro-description">
-            This website helps visually impaired individuals detect and respond to potential hazards in their
-            surroundings by analyzing visual input, identifying dangerous objects such as vehicles, bicycles,
-            and obstacles, determining their position relative to the user, and providing real-time directional
-            audio alerts such as left, center, and right.
-        </p>
-    </section>
+<main class="app">
+    <header class="app-header">
+        <div class="brand">
+            <img class="brand-mark" src="{{ asset_url('icons/icon-192.png') }}" alt="" width="36" height="36">
+            <div>
+                <h1 class="brand-title">Hazard Detect</h1>
+                <p class="brand-subtitle">Directional alerts, spoken aloud</p>
+            </div>
+        </div>
+        <span class="status-pill" data-status data-state="off">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span data-status-text>Camera off</span>
+        </span>
+    </header>
 
-    <section class="camera-stage" data-camera-stage>
+    <section class="camera-stage" data-camera-stage aria-label="Live camera view">
         <video class="camera-feed" autoplay muted playsinline data-camera-view></video>
-        <canvas class="overlay-canvas" data-overlay-canvas></canvas>
+        <canvas class="overlay-canvas" data-overlay-canvas aria-hidden="true"></canvas>
         <canvas hidden data-capture-canvas></canvas>
-        <div class="camera-placeholder" data-camera-placeholder aria-hidden="true">
-            <div class="camera-placeholder-orb"></div>
+
+        <div class="zone-labels" aria-hidden="true">
+            <span>Left</span>
+            <span>Ahead</span>
+            <span>Right</span>
+        </div>
+
+        <div class="camera-placeholder" data-camera-placeholder>
+            <div class="placeholder-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h7A2.5 2.5 0 0 1 16 7.5V8l3.2-2.1A1.2 1.2 0 0 1 21 6.9v10.2a1.2 1.2 0 0 1-1.8 1L16 16v.5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 4 16.5z"/>
+                </svg>
+            </div>
+            <p class="placeholder-title" data-placeholder-title>Camera is off</p>
+            <p class="placeholder-text" data-placeholder-text>Press Start to begin scanning for hazards.</p>
         </div>
     </section>
 
-    <div class="control-dock" role="group" aria-label="Live hazard detection controls">
-        <button class="control-button" type="button" data-camera-toggle aria-label="Start or stop the live camera">
-            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h7A2.5 2.5 0 0 1 16 7.5V8l3.2-2.1A1.2 1.2 0 0 1 21 6.9v10.2a1.2 1.2 0 0 1-1.8 1L16 16v.5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 4 16.5z"/>
-            </svg>
-            <span class="sr-only">Toggle live camera</span>
-        </button>
+    <section class="side-panel">
+        <div class="alert-card" data-alert data-level="idle" role="status">
+            <span class="alert-level" data-alert-level>Standby</span>
+            <p class="alert-text" data-alert-text>Waiting for the camera.</p>
+        </div>
 
-        <button class="control-button" type="button" data-camera-flip aria-label="Switch between front and rear cameras">
-            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 3h2.5A2.5 2.5 0 0 1 21 5.5V8"/>
-                <path d="M8 21H5.5A2.5 2.5 0 0 1 3 18.5V16"/>
-                <path d="M21 8l-3-3-3 3"/>
-                <path d="M3 16l3 3 3-3"/>
-                <path d="M8 7.5C9.2 6.5 10.5 6 12 6c2.5 0 4.7 1.3 6 3.4"/>
-                <path d="M16 16.5c-1.2 1-2.5 1.5-4 1.5-2.5 0-4.7-1.3-6-3.4"/>
-            </svg>
-            <span class="sr-only">Switch cameras</span>
-        </button>
+        <div class="direction-meter" aria-hidden="true">
+            <div class="direction-cell" data-direction-cell="left">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+                <span>Left</span>
+            </div>
+            <div class="direction-cell" data-direction-cell="center">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>
+                <span>Ahead</span>
+            </div>
+            <div class="direction-cell" data-direction-cell="right">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                <span>Right</span>
+            </div>
+        </div>
 
-        <button class="control-button is-active" type="button" data-audio-toggle aria-label="Mute or unmute audio alerts">
-            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 10v4h4l5 4V6l-5 4z"/>
-                <path d="M17 9a4 4 0 0 1 0 6"/>
-                <path d="M19.8 6.2a8 8 0 0 1 0 11.6"/>
-            </svg>
-            <span class="sr-only">Toggle audio alerts</span>
-        </button>
-    </div>
+        <div class="control-dock" role="group" aria-label="Live hazard detection controls">
+            <button class="control-button control-button-primary" type="button" data-camera-toggle>
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h7A2.5 2.5 0 0 1 16 7.5V8l3.2-2.1A1.2 1.2 0 0 1 21 6.9v10.2a1.2 1.2 0 0 1-1.8 1L16 16v.5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 4 16.5z"/>
+                </svg>
+                <span class="control-label" data-camera-label>Start</span>
+            </button>
+
+            <button class="control-button" type="button" data-camera-flip>
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 3h2.5A2.5 2.5 0 0 1 21 5.5V8"/>
+                    <path d="M8 21H5.5A2.5 2.5 0 0 1 3 18.5V16"/>
+                    <path d="M21 8l-3-3-3 3"/>
+                    <path d="M3 16l3 3 3-3"/>
+                    <path d="M8 7.5C9.2 6.5 10.5 6 12 6c2.5 0 4.7 1.3 6 3.4"/>
+                    <path d="M16 16.5c-1.2 1-2.5 1.5-4 1.5-2.5 0-4.7-1.3-6-3.4"/>
+                </svg>
+                <span class="control-label">Flip</span>
+            </button>
+
+            <button class="control-button" type="button" data-audio-toggle>
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 10v4h4l5 4V6l-5 4z"/>
+                    <path d="M17 9a4 4 0 0 1 0 6" data-audio-wave/>
+                    <path d="M19.8 6.2a8 8 0 0 1 0 11.6" data-audio-wave/>
+                </svg>
+                <span class="control-label" data-audio-label>Voice on</span>
+            </button>
+        </div>
+
+        <details class="about-card">
+            <summary>How it works</summary>
+            <p>
+                Point your phone's camera ahead of you. Every second, the app checks the view for vehicles,
+                people, bicycles, potholes and obstacles such as cones or barriers. It works out whether each
+                one is on your left, ahead, or on your right, and how close it is, then speaks an alert
+                when something needs your attention. When the path is clear, it stays quiet.
+            </p>
+        </details>
+    </section>
 
     <div class="sr-only" aria-live="polite" data-live-region></div>
 </main>

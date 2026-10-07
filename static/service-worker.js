@@ -1,4 +1,4 @@
-const VERSION = "hazard-detect-v1";
+const VERSION = "hazard-detect-v4";
 const APP_SHELL = [
     "/",
     "/static/styles.css",

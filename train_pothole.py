@@ -1,21 +1,26 @@
-from ultralytics import YOLO
+from pathlib import Path
+
 import torch
+from ultralytics import YOLO
+
+BASE_DIR = Path(__file__).resolve().parent
 
 
 def main():
     device = 0 if torch.cuda.is_available() else "cpu"
-    print(device) 
-    model = YOLO("yolov8n.pt")
+    print(f"Training on: {device}")
+    model = YOLO(str(BASE_DIR / "yolov8n.pt"))
 
     model.train(
-        data="data/pothole_yolo/data.yaml",
+        data=str(BASE_DIR / "data/pothole_yolo/data.yaml"),
         epochs=50,
         imgsz=640,
         batch=16,
         name="pothole_detector",
-        project="runs/detect",
+        # Absolute path: Ultralytics prefixes relative projects with runs/detect/
+        project=str(BASE_DIR / "runs/detect"),
         device=device,
-        workers=4
+        workers=4,
     )
 
 
