@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from flask import Flask, jsonify, make_response, render_template, request, send_from_directory
+import os
+
+from flask import Flask, jsonify, make_response, render_template, request, send_from_directory, url_for
 
 from live_detection import analyze_live_frame_data_url, warm_up_detectors
 
@@ -8,6 +10,17 @@ from live_detection import analyze_live_frame_data_url, warm_up_detectors
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
+
+    @app.context_processor
+    def asset_helpers():
+        # Append the file's mtime so the service worker's cache-first lookup misses
+        # whenever a CSS/JS file changes, instead of serving a stale copy.
+        def asset_url(filename: str) -> str:
+            path = os.path.join(app.static_folder, filename)
+            version = int(os.path.getmtime(path)) if os.path.exists(path) else 0
+            return url_for("static", filename=filename, v=version)
+
+        return {"asset_url": asset_url}
 
     @app.get("/")
     def index():

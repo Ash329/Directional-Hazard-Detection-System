@@ -20,14 +20,17 @@ Every ~1 second while the camera is live:
    severity, then box area, then confidence.
 4. **Response** — JSON payload with `summary_text`, `primary_direction`,
    `has_hazard`, and the top detections.
-5. **Frontend** — draws colored bounding boxes over the live video and, when
-   `has_hazard` is true, speaks the summary via the browser's
-   `SpeechSynthesis` API. When the path is clear the app stays silent.
+5. **Frontend** — draws labeled, severity-colored boxes over the live video,
+   shows the top alert and a left / ahead / right meter, and speaks alerts via
+   the browser's `SpeechSynthesis` API. Alerts are buffered so one never cuts
+   off another, approaching objects take priority (and may interrupt), and the
+   same object is not repeated within 8 seconds unless it becomes more urgent.
+   When the path is clear the app stays silent.
 
 ## Tech stack
 
 - **Backend:** Python 3, Flask, OpenCV, Ultralytics (YOLOv8, YOLO-World, custom pothole model)
-- **Frontend:** HTML, Tailwind (via CDN), vanilla JS, Canvas 2D overlay
+- **Frontend:** HTML, plain CSS, vanilla JS, Canvas 2D overlay
 - **Audio:** browser-native `SpeechSynthesis` (no cloud TTS)
 - **PWA:** `manifest.webmanifest`, service worker with offline app-shell cache,
   maskable icons, iOS meta tags
